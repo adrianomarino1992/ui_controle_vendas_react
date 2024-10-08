@@ -1,0 +1,48 @@
+
+.HistoryItemCard{
+    
+    display: flex;
+    justify-content: start;
+    gap: 15px;
+}
+
+.HistoryItemCard .Image 
+{
+    width: 130px;
+    height: 130px;    
+    cursor: pointer;
+}
+
+
+.HistoryItemCard .Navegable 
+{
+    transition: all 200ms;
+}
+
+
+.HistoryItemCard .Navegable:hover 
+{
+    transform: scale(1.05);
+}
+
+
+.HistoryItemCard .Content 
+{   
+    width: 80%;
+    height: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    overflow: hidden;
+}
+
+.HistoryItemCard .Despesa
+{
+    background-color: rgba(231, 43, 18, 0.356);
+}
+
+.HistoryItemCard .Receita
+{
+    background-color: rgba(18, 231, 18, 0.356);
+}

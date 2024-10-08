@@ -1,0 +1,35 @@
+.HistoryList{
+    padding: 30px;
+    position: absolute;
+    top: 70px;
+    height: calc(100% - 105px);
+    width: 100%;
+    left: 0px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(255, 255, 255);
+    overflow: auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.HistoryList input 
+{
+    width: 600px;
+    height: 30px;
+    font-size: 13px;
+    border: 0px;
+    outline: none;
+    padding: 3px;
+    background-color: rgb(243, 242, 239);
+    box-shadow: 2px 0px 2px 0px rgba(190, 189, 189, 0.925);
+    font-family: "Oswald", sans-serif;
+    font-optical-sizing: auto;
+    transition: all 200ms;
+    
+}
+
+.HistoryList input:hover
+{
+   transform: scale(1.05);
+}

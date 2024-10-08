@@ -1,0 +1,35 @@
+.UserCard
+{
+    height: 450px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0px 0px 10px 0px rgb(153, 151, 151);
+    padding: 30px;
+    cursor: pointer;
+    transition: all 500ms;    
+}
+
+.UserCard:hover
+{
+    transform: scale(1.05);
+}
+
+.UserCard h3
+{
+    text-align: center;
+}
+
+
+.UserCard h4
+{
+    font-weight: 400;
+}
+
+.UserImage
+{
+    width: 100%;
+    height: 300px;
+    background-color: rgba(240, 248, 255, 0);
+    border-style: none;
+    border-width: 0px;
+    border: 0;
+}

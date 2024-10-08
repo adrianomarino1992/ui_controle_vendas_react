@@ -1,0 +1,27 @@
+.ProductsContainer
+{
+    position: absolute;
+    top: 70px;
+    height: calc(100% - 105px);
+    width: 100%;
+    left: 0px;
+    padding: 20px;
+    background: rgb(254,254,254);
+    background: linear-gradient(120deg, rgba(254,254,254,1) 0%, rgb(235, 232, 232) 100%);
+    overflow: auto;
+}
+
+
+.Products
+{
+    position: absolute;
+    top: 20px;
+    height: calc(100% - 120px);
+    width: 100%;
+    left: 0px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 30px;
+    padding: 30px;    
+}
+

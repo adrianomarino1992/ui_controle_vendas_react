@@ -1,0 +1,21 @@
+button 
+{
+    width: 200px;
+    box-shadow: 2px 0px 2px 0px rgba(190, 189, 189, 0.925);
+    font-family: "Oswald", sans-serif;
+    font-optical-sizing: auto;
+    transition: all 200ms;
+    cursor: pointer;
+    border: none;
+    height: 30px;
+    background: rgb(49,93,129);
+    background: linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(244, 244, 245) 100%);
+    color: rgb(0, 0, 0);
+    font-weight: 800;
+}
+
+
+button:hover
+{
+   transform: scale(1.05);
+}

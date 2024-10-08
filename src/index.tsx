@@ -1,3 +1,5 @@
+import 'ts_linq_base';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';

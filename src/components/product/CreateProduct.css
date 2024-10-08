@@ -1,0 +1,89 @@
+.EditProduct{
+    padding: 30px;
+    position: absolute;
+    top: 70px;
+    height: calc(100% - 105px);
+    width: 100%;
+    left: 0px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(255, 255, 255);
+
+    align-items: center;
+    gap: 10px;
+}
+
+.EditProduct input, select 
+{
+    width: 600px;
+    height: 30px;
+    font-size: 13px;
+    border: 0px;
+    outline: none;
+    padding: 3px;
+    background-color: rgb(243, 242, 239);
+    box-shadow: 2px 0px 2px 0px rgba(190, 189, 189, 0.925);
+    font-family: "Oswald", sans-serif;
+    font-optical-sizing: auto;
+    transition: all 200ms;
+    
+}
+
+.EditProduct input:hover
+{
+   transform: scale(1.05);
+}
+
+.EditProduct select{
+    cursor: pointer;
+}
+.EditProduct select:hover
+{
+   transform: scale(1.05);
+}
+
+.EditProduct .ProductImage
+{
+    width: 300px;
+    height: 300px;
+    background-color: rgba(240, 248, 255, 0);
+    border-style: none;
+    border-width: 0px;
+    border: 0;
+    transition: all 200ms;
+    cursor: pointer;
+}
+
+
+.EditProduct .ProductImage:hover
+{
+   transform: scale(1.05);
+}
+
+
+.ButtonsContainer
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    width: 600px;
+
+}
+
+
+@media only screen and (max-width: 600px) 
+{
+
+    .EditProduct input, select
+    {
+        width: 90%;
+    }
+
+        
+    .ButtonsContainer
+    {        
+        width: 90%;
+    }
+
+}

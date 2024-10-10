@@ -4,11 +4,14 @@ import Button from '../shared/button/Button';
 import {MessageDialog } from '../messagebox/MessageBox';
 import './CreateUser.css';
 import User from '../../entities/user/User';
-import {useLocation} from 'react-router-dom'
+import {useLocation, useNavigate} from 'react-router-dom'
 import { useGlobalContext } from '../../global/GlobalContext';
+import { API } from '../../api/API';
 
 export default function EditProduct()
 {
+
+    let navigation = useNavigate();
 
     let user : User | undefined =useLocation().state as (User | undefined);
     
@@ -20,7 +23,15 @@ export default function EditProduct()
 
     useEffect(()=>{       
         if(context && context.Data && context.Data.CheckLogin)
-            context!.Data!.CheckLogin!();          
+            context!.Data!.CheckLogin!();   
+                              
+        if(!editingUser?.IsSuperUser())
+        {
+            let clone = Reflect.construct(User, []);
+            Object.assign(clone, context?.Data?.CurrentUser);
+            setUser(clone);
+        }
+        
     }, []);
             
     let ShowConfirm = (action: ()=> void) =>
@@ -41,25 +52,11 @@ export default function EditProduct()
     {
         MessageDialog.Toast(title, message, action);
     }
-              
-
-    let Getuser = ()=>
-    {
-        let nome = (document.getElementById("nome-user") as any).value;
-        let login = (document.getElementById("login-user") as any).value;
-        let senha = (document.getElementById("senha-user") as any).value;
-        let departamento = (document.getElementById("departamento-user") as any).value;
-        let status = (document.getElementById("status-user") as any).value == 1;
-        let saldo = (document.getElementById("saldo-user") as any).value;
-
-        return new User(editing ? user!.Id : "", nome, login, senha, departamento).SetActive(status).SetBalance(saldo);
-    }
-
-    
+                  
 
     let SalvarClick = () =>
     {   
-        let user = Getuser();
+        let user = editingUser!;
 
         if(!user.Name)
         {
@@ -84,14 +81,8 @@ export default function EditProduct()
    
     let SalvarUser = async () => {        
 
-        let postResult = await fetch(`http://192.168.15.144:60000/user/${editing ? "update" : "create"}`, 
-            {
-                method: editing ? 'PUT' : 'POST', 
-                headers: {
-                    'Content-Type': 'application/json', 
-                  },
-                body: JSON.stringify(Getuser())
-            });
+        let postResult = await API.RequestAsync(`/user/${editing ? "update" : "create"}`, context?.Data?.Token ?? "", editing ? 'PUT' : 'POST', editingUser);
+            
             
         if(!postResult.ok)        
             Toast("Erro", await postResult.text());   
@@ -102,7 +93,13 @@ export default function EditProduct()
             let uploadImage = await SalvarImagem(id);
 
             if(uploadImage)
-                Toast("Sucesso", `Usuario ${editing ? "alterado" : "incluido"} na base de dados`, ()=>{window.location.href = "http://192.168.15.144:3000/users"});           
+                Toast("Sucesso", `Usuario ${editing ? "alterado" : "incluido"} na base de dados`, ()=>
+                { 
+                    if(context?.Data?.CurrentUser?.IsSuperUser())
+                        navigation('/users', {state:{Reload : true}});
+                    else 
+                        navigation('/');   
+                });           
         }    
         
     };
@@ -117,11 +114,7 @@ export default function EditProduct()
         let data = new FormData();        
         data.append('image', files[0]);
 
-        let responseUpload = await fetch(`http://192.168.15.144:60000/user/set-image?userId=${productId}`, 
-        {
-            method: 'POST', 
-            body: data
-        });
+        let responseUpload = await API.RequestAsync(`/user/set-image?userId=${productId}`, context?.Data?.Token ?? "", 'POST', data );       
 
         if(!responseUpload.ok)
         {
@@ -162,6 +155,7 @@ export default function EditProduct()
         let status = (document.getElementById("status-user") as any).value == 1;
         let saldo = (document.getElementById("saldo-user") as any).value;
 
+        console.log(editingUser);
         setUser(new User(editing ? user!.Id : "", nome, login, senha, departamento).SetActive(status).SetBalance(saldo));  
 
     }
@@ -171,11 +165,12 @@ export default function EditProduct()
         <div className="CreateUser">
             <input type='file' id='imagem-user' hidden onChange={()=> ArquivoSelecionado()}/>
             <img className='UserImage' id="img-user" src={editing? 
-                `http://192.168.15.144:60000/user/get-image?userId=${user?.Id}`: 
-                `http://192.168.15.144:60000/user/get-default-image`} onClick={()=> SelecionarArquivo()}/>
+                `${API.URL}/user/static/get-image?userId=${user?.Id}`: 
+                `${API.URL}/user/static/get-default-image`} onClick={()=> SelecionarArquivo()}/>
              <>
             <code>Login</code>
-            <input id="login-user" type='text' maxLength={3} placeholder='login do usuario' value={editingUser?.Login} onChange={()=>{ValueChange()}}/>
+            <input id="login-user" type='text' maxLength={3} placeholder='login do usuario' value={editingUser?.Login} onChange={()=>{ValueChange()}} 
+            disabled={!context?.Data?.CurrentUser?.IsSuperUser()}/>
             </>
             <>
             <code>Nome</code>
@@ -187,7 +182,7 @@ export default function EditProduct()
             </>
             <>
             <code>Departamento</code>
-                <select id="departamento-user" onChange={()=>{ValueChange()}} defaultValue={editingUser?.Departament}>
+                <select id="departamento-user" onChange={()=>{ValueChange()}} defaultValue={editingUser?.Departament} disabled={!context?.Data?.CurrentUser?.IsSuperUser()}>
                     {
                         ["Desenvolvimento", "Suporte", "Implantação", "Recursos humanos", "Comercial", "Sem departamento definido"].Select(s => 
                             (
@@ -199,18 +194,18 @@ export default function EditProduct()
             </>
             <>
             <code>Status</code>
-                <select id="status-user" onChange={()=>{ValueChange()}} defaultChecked={editingUser?.Active}>
+                <select id="status-user" onChange={()=>{ValueChange()}} defaultChecked={editingUser?.Active} disabled={!context?.Data?.CurrentUser?.IsSuperUser()}>
                     <option value={1}>Ativo</option>
                     <option value={0}>Desativado</option>
                 </select>
             </>
             <>
             <code>Saldo</code>
-            <input id="saldo-user" type='number' placeholder='Saldo do usuario' value={editingUser?.Balance} onChange={()=>{ValueChange()}}/>
+            <input id="saldo-user" type='number' placeholder='Saldo do usuario' value={editingUser?.Balance} onChange={()=>{ValueChange()}} disabled={!context?.Data?.CurrentUser?.IsSuperUser()}/>
             </>
             <hr/>
             <div className='ButtonsContainer'>
-                <Button Text='Cancelar' Type='Cancel' OnClickEventHandler={()=>{ window.location.href="/users"}}/>
+                <Button Text='Cancelar' Type='Cancel' OnClickEventHandler={()=>{ navigation(-1)}}/>
                 <Button Text='Salvar' Type='Save' OnClickEventHandler={SalvarClick}/>
             </div>
         </div>

@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useGlobalContext } from '../../global/GlobalContext';
 import './Payment.css';
 import Button from '../shared/button/Button';
-import { useNavigate } from 'react-router-dom';
 import { MessageDialog } from '../messagebox/MessageBox';
+import { API } from '../../api/API';
 
 
 
@@ -49,14 +49,8 @@ export default function Payment()
             UserId :  context?.Data?.CurrentUser?.Id!
         }
 
-        let pagarResponse = await fetch('http://192.168.15.144:60000/order/pay-order', 
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/json'
-            }, 
-            body : JSON.stringify(data)
-        });
+        let pagarResponse = await API.RequestAsync('/order/pay-order', context?.Data?.Token ?? "", 'POST', data);
+        
 
         if(!pagarResponse.ok)
         {
@@ -110,12 +104,8 @@ export default function Payment()
         let data = new FormData();        
         data.append('image', files[0]);
 
-        let responseUpload = await fetch(`http://192.168.15.144:60000/order/set-image?paymentId=${paymentId}`, 
-        {
-            method: 'POST', 
-            body: data
-        });
-
+        let responseUpload = await API.RequestAsync(`/order/set-image?paymentId=${paymentId}`, context?.Data?.Token ?? "", 'POST', data);
+       
         if(!responseUpload.ok)
         {
             MessageDialog.Toast("Erro", await responseUpload.text());
@@ -134,7 +124,7 @@ export default function Payment()
           
            <div className='Container'>
             <input type='file' id="image-payment" onChange={()=>carregarArquivo()} hidden />
-            <img className="Image" id="image-carregada-payment" src="http://192.168.15.144:60000/product/get-default-image" onClick={()=>selecionarArquivo()} />           
+            <img className="Image" id="image-carregada-payment" src={`${API.URL}/product/static/get-default-image`} onClick={()=>selecionarArquivo()} />           
            </div>
            <div className='Container'>
                 <p>Saldo: <code>R$ {saldo?.toFixed(2).toString().replace('.', ',')}</code></p>

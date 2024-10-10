@@ -6,10 +6,12 @@ import './CreateProduct.css';
 import Product from '../../entities/product/Product';
 import {useLocation, useNavigate} from 'react-router-dom'
 import { useGlobalContext } from '../../global/GlobalContext';
+import { API } from '../../api/API';
 
 export default function EditProduct()
 {
     let navigation = useNavigate();
+    
 
     let product : Product | undefined =useLocation().state as (Product | undefined);
     
@@ -19,9 +21,21 @@ export default function EditProduct()
 
     let context = useGlobalContext();
 
-    useEffect(()=>{       
+    useEffect(()=>{    
+           
         if(context && context.Data && context.Data.CheckLogin)
-            context!.Data!.CheckLogin!();          
+            context!.Data!.CheckLogin!();   
+        
+       
+        if(context && context.Data)
+        { 
+            if(!context.Data.CurrentUserIsSuperUser())
+                navigation(-1);
+        }else
+        {
+            navigation('/');
+        }         
+           
     }, []);
 
         
@@ -91,14 +105,7 @@ export default function EditProduct()
    
     let SalvarProduto = async () => {        
 
-        let postResult = await fetch(`http://192.168.15.144:60000/product/${editing ? "update" : "create"}`, 
-            {
-                method: editing ? 'PUT' : 'POST', 
-                headers: {
-                    'Content-Type': 'application/json', 
-                  },
-                body: JSON.stringify(GetProduto())
-            });
+        let postResult = await API.RequestAsync(`/product/${editing ? "update" : "create"}`, context?.Data?.Token ?? "", editing ? 'PUT' : 'POST', GetProduto());          
             
         if(!postResult.ok)        
             Toast("Erro", await postResult.text());   
@@ -109,7 +116,7 @@ export default function EditProduct()
             let uploadImage = await SalvarImagem(id);
 
             if(uploadImage)
-                Toast("Sucesso", `Produto ${editing ? "alterado" : "incluido"} na base de dados`, ()=>{window.location.href = "http://192.168.15.144:3000/"});           
+                Toast("Sucesso", `Produto ${editing ? "alterado" : "incluido"} na base de dados`, ()=>{ context?.Data?.Navigate!('/products', [])});           
         }    
         
     };
@@ -124,11 +131,7 @@ export default function EditProduct()
         let data = new FormData();        
         data.append('image', files[0]);
 
-        let responseUpload = await fetch(`http://192.168.15.144:60000/product/set-image?productId=${productId}`, 
-        {
-            method: 'POST', 
-            body: data
-        });
+        let responseUpload = await API.RequestAsync(`/product/set-image?productId=${productId}`, context?.Data?.Token ?? "", 'POST', data );      
 
         if(!responseUpload.ok)
         {
@@ -178,8 +181,8 @@ export default function EditProduct()
         <div className="EditProduct">
             <input type='file' id='imagem-produto' hidden onChange={()=> ArquivoSelecionado()}/>
             <img className='ProductImage' id="img-produto" src={editing? 
-                `http://192.168.15.144:60000/product/get-image?productId=${product?.Id}`: 
-                `http://192.168.15.144:60000/product/get-default-image`} onClick={()=> SelecionarArquivo()}/>
+                `${API.URL}/product/static/get-image?productId=${product?.Id}`: 
+                `${API.URL}/product/static/get-default-image`} onClick={()=> SelecionarArquivo()}/>
             <>
             <code>Nome</code>
             <input id="nome-produto" type='text' placeholder='Nome do produto' value={editingProduct?.Name} onChange={()=>{ValueChange()}}/>

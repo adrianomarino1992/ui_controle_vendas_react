@@ -19,11 +19,20 @@ export default function Footer()
     return (
 
         <footer className='Footer'>
+            
             <code>{data.Username}</code>
-            <code>{data.BalanceString}</code>
-            <img id="hist-btn" src={hist} onClick={()=>{
-                context?.Data?.Navigate!('/payment', []);
-            }}/>
+
+            {
+                !(context && context.Data?.GetCurrentUser()?.IsSuperUser()) && (
+                    <>
+                        <code>{data.BalanceString}</code>
+                        <img id="hist-btn" src={hist} onClick={()=>{
+                            context?.Data?.Navigate!('/payment', []);
+                        }}/>
+                    </> 
+                )                                        
+            } 
+            
         </footer>
     );
 }

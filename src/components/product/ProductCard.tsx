@@ -5,6 +5,7 @@ import { useGlobalContext } from '../../global/GlobalContext';
 import { MessageDialog } from '../messagebox/MessageBox';
 import User from '../../entities/user/User';
 import Order, { OrderItem } from '../../entities/order/Order';
+import { API } from '../../api/API';
 
 
 export default function ProductCard(props : {product : Product})
@@ -29,14 +30,7 @@ export default function ProductCard(props : {product : Product})
                     let item = new OrderItem(props.product.Id, props.product.Name, props.product.Price, 1);
                     let order = new Order("", context!.Data!.CurrentUser!.Id, [item]);
                     
-                    let buyResponse = await fetch('http://192.168.15.144:60000/order/create', 
-                    {
-                        method: 'POST', 
-                        headers: {
-                            'Content-Type': 'application/json', // Tipo de conteúdo a ser enviado
-                          },
-                        body: JSON.stringify(order)
-                    });
+                    let buyResponse = await API.RequestAsync('/order/create', context?.Data?.Token ?? "", 'POST', order );                  
 
                     if(!buyResponse.ok)
                         MessageDialog.Toast("Erro ao comprar o produto", await buyResponse.text());
@@ -63,8 +57,8 @@ export default function ProductCard(props : {product : Product})
         style={props.product.Active ? {opacity: "100%"} : {opacity: "30%"}}>            
             <img className='ProductImage' src={
                 props.product.Id ?
-                `http://192.168.15.144:60000/product/get-image?productId=${props.product.Id}` : 
-                `http://192.168.15.144:60000/product/get-new-image`
+                `${API.URL}/product/static/get-image?productId=${props.product.Id}` : 
+                `${API.URL}/product/static/get-new-image`
                 }/>
             <h3>{props.product.Name}</h3>
             

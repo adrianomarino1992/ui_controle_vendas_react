@@ -5,45 +5,32 @@ import logo from './logo.jpg';
 import User from '../../entities/user/User';
 import { MessageDialog } from '../messagebox/MessageBox';
 import { useGlobalContext } from '../../global/GlobalContext';
+import { API } from '../../api/API';
 
 
 export default function Login()
 {
     let context = useGlobalContext();    
-    
-    let contextUser = context?.Data?.CurrentUser ?? new User("", "", "", "", "");
-
-   
-    //contextUser = context?.Data?.CurrentUser ?? new User(User.GetDeveloperName(), User.GetDeveloperName(), "", "", "").SetBalance(9999);
-    
-    
-    useEffect(() =>
-    {
-        if(contextUser && contextUser.Id)
-        {
-            setTimeout(()=>{
-        
-                context!.Data!.UpdateStatusBarHandler!({Username: contextUser.Name, BalanceString: `Aberto: R$ ${contextUser.Balance.toFixed(2).replace('.', ',')}`});
-        
-            }, 500);
-        
-            context?.SetData({...context!.Data, CurrentUser : contextUser, CheckLogin: ()=>{}, UpdateCurrentUser: async ()=>{
-                await loginRequest(contextUser.Login, contextUser.Password);
-            }});  
-        }
-               
-    }, []);
      
-    let [_, setUser] = useState<User>(contextUser);
+    let [currentUser, setUser] = useState<User>(new User("", "", "", "", ""));
 
-    let visible: React.CSSProperties = contextUser.Id ? {display: 'none'} : {display : 'flex'};
+    useEffect(()=>{
+
+        let contextUser = context?.Data?.CurrentUser ?? new User("", "", "", "", "");    
+
+        setUser(contextUser);
+
+    }, [])
+    
+    let visible: React.CSSProperties = currentUser.Id ? {display: 'none'} : {display : 'flex'};
 
     let tryLogin = async () =>
     {
 
         let login = (document.getElementById('login-user') as any).value;
         let password = (document.getElementById('senha-user') as any).value;       
-
+      
+        
         if(!login)
         {
             MessageDialog.Toast("Atenção", "Informe o login");
@@ -55,13 +42,18 @@ export default function Login()
             MessageDialog.Toast("Atenção", "Informe a senha");
             return;
         }
+
+        (document.getElementById('login-user') as any).value = '';
+        (document.getElementById('senha-user') as any).value = '';
         
         await loginRequest(login, password);
+
+        context!.Data!.Navigate!('/', []);
     };
 
     let loginRequest = async (login : string, password : string) =>
     {
-        let loginResponse = await fetch(`http://192.168.15.144:60000/user/login?username=${login}&password=${password}`);
+        let loginResponse = await API.RequestAsync(`/user/login?username=${login}&password=${password}`, '', 'GET');
 
         if(!loginResponse.ok)
         {
@@ -69,16 +61,38 @@ export default function Login()
             return;
         }
 
-        let userResponse = await loginResponse.json() as User;
+        let responseJson = await loginResponse.json() as any;
+
+        let userResponse = responseJson.User;
+
+        userResponse.__proto__ = User.prototype;
         
         setUser(userResponse);
 
-        context?.SetData({...context.Data, CurrentUser: userResponse, CheckLogin: ()=>{}, UpdateCurrentUser: async()=>
-        {
-            await loginRequest(userResponse.Login, userResponse.Password);
-        }});  
+        context?.SetData(
+            {...context.Data, CurrentUser: userResponse, 
+                Token : responseJson.Token,
+                GetCurrentUser : () => {                    
+                    return userResponse;
+                },
+                CheckLogin: ()=>{}, 
+                UpdateCurrentUser: async()=>
+                {
+                    await loginRequest(userResponse.Login, userResponse.Password);
+                },
+                CurrentUserIsSuperUser: ()=>{
+
+                    if(userResponse.IsSuperUser())
+                        return true;
+
+                    return false;
+                }
+            });  
 
         context!.Data!.UpdateStatusBarHandler!({Username: userResponse.Name, BalanceString: `Aberto: R$ ${userResponse.Balance.toFixed(2).replace('.', ',')}`});
+               
+        context?.Data?.OnLogin?.forEach(v => v(userResponse));    
+
     }
 
     return(

@@ -47,5 +47,10 @@ export default class User
         return this;
     }
 
+    public IsSuperUser()
+    {
+        return this.Name == User.GetSuperName() || this.Name == User.GetDeveloperName();
+    }
+
     
 }

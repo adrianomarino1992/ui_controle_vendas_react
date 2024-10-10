@@ -4,24 +4,38 @@ import { useEffect, useState } from 'react';
 import { MessageDialog } from '../messagebox/MessageBox';
 import UserCard from './UserCard';
 import { useGlobalContext } from '../../global/GlobalContext';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { API } from '../../api/API';
 
 
 export default function ListUsers()
 {
     let [users, setUsers] = useState<User[]>([]);
-
     let context = useGlobalContext();
 
-    useEffect(()=>{       
+    let navigate = useNavigate();    
+
+    useEffect(()=>{    
+
         if(context && context.Data && context.Data.CheckLogin)
-            context!.Data!.CheckLogin!();          
+            context!.Data!.CheckLogin!(); 
+                
+        if(context && context.Data && context.Data.CurrentUser)
+        {
+            if(!context.Data.CurrentUserIsSuperUser())
+                navigate('/user', {state: context?.Data?.CurrentUser});
+        }
+        
+
     }, []);
     
     useEffect(()=>{
 
         (async () =>{
             
-            let getUsersTaskResult = await fetch('http://192.168.15.144:60000/user/list-all');
+            if(!context?.Data?.CurrentUserIsSuperUser())
+                return;
+            let getUsersTaskResult = await API.RequestAsync('/user/list-all', context?.Data?.Token ?? "", 'GET');
 
             if(!getUsersTaskResult.ok)
             {
@@ -29,9 +43,19 @@ export default function ListUsers()
                 return;
             }
 
-            let users = await getUsersTaskResult.json() as User[];
+            let usersJson = await getUsersTaskResult.json();
+
+            let users : User[] = [];
+
+            for(let u of usersJson)
+            {
+                let user = Reflect.construct(User, []);
+                Object.assign(user, u);
+                users.Add(user);
+            }
 
             users.Add(new User("", "Adicione um novo usuario", "Novo", "", ""));
+
 
             setUsers(users);
             

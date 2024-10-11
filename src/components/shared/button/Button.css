@@ -17,7 +17,7 @@ button
 .BtnLogin
 {
     background: rgb(127,180,252);
-    background: linear-gradient(90deg, rgba(127,180,252,1) 0%, rgba(0,212,255,1) 100%);
+    background: linear-gradient(90deg, rgb(32, 32, 32) 0%, rgb(64, 64, 65) 100%);
     color: white;
     height: 40px;
 }
@@ -26,7 +26,7 @@ button
 .BtnSave
 {
     background: rgb(127,180,252);
-    background: linear-gradient(90deg, rgb(110, 148, 202) 0%, rgb(33, 161, 187) 100%);
+    background: linear-gradient(90deg, rgb(118, 202, 110) 0%, rgb(33, 187, 102) 100%);
     color: white;
     height: 40px;
 }
@@ -34,7 +34,7 @@ button
 .BtnCancel
 {
     background: rgb(186,86,69);
-    background: linear-gradient(90deg, rgba(186,86,69,1) 0%, rgba(128,47,44,1) 100%);
+    background: linear-gradient(90deg, rgb(233, 107, 68) 0%, rgb(207, 121, 63) 100%);
     color: aliceblue;
 }
 

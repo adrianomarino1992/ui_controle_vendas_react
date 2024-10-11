@@ -94,7 +94,7 @@ export default function HistoryList()
             </>
            )}
            {(!isSuperUser || showResult) && (!histories || !histories.Any()) && <p>Nenhum registro encontrado</p>}
-           {histories && histories.Select(s => (<HistoryItemCard key={s.Id} histories={s} />))}
+           {histories && histories.Select(s => (<HistoryItemCard key={s.Id ? s.Id : Math.random()} histories={s} />))}
         </div>
     );
 }

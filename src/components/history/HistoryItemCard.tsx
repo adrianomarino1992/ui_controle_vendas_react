@@ -28,6 +28,7 @@ export default function HistoryItemCard(props : {histories: History})
                 {isPayment && (
                     <>
                     <p>Protocolo: <code>{props.histories.Id}</code></p>
+                    <p>Valor: <code>R$ {props.histories.Amount?.toFixed(2).replace('.', ',')}</code></p>
                     <p>Data: <code>{Utils.CastDateToString(new Date(props.histories.Date!))}</code></p>
                     <div className='Receita'>
                         <p>Saldo no momento: <code>R$ {props.histories.UserBalance?.toFixed(2).replace('.', ',')}</code></p>
@@ -39,7 +40,7 @@ export default function HistoryItemCard(props : {histories: History})
                     <>            
                     <p>Protocolo: <code>{props.histories.Id}</code></p>        
                     <p>Produto: <code>{props.histories.ProductName}</code></p>
-                    <p>Preço: <code>{props.histories.ProdutcPrice?.toFixed(2).replace('.', ',')}</code></p>
+                    <p>Preço: <code>R$ {props.histories.ProdutcPrice?.toFixed(2).replace('.', ',')}</code></p>
                     <p>Data: <code>{Utils.CastDateToString(new Date(props.histories.Date!))}</code></p>
                     {props.histories.PaymentDate && (
                         <p>Data de pamento: <code>{Utils.CastDateToString(new Date(props.histories.PaymentDate!))}</code></p>

@@ -3,7 +3,7 @@ import './Button.css';
 
 export default function Button(props :
     {Text: string, 
-        Type: "Save" | "Cancel", 
+        Type: "Save" | "Cancel" | "Login", 
         OnClickEventHandler : ()=> void,
     })  
 {
@@ -14,7 +14,7 @@ export default function Button(props :
     }
 
     return(
-        <button 
+        <button className={`Btn${props.Type}`}
         style={{display: props.Text ? "block": "none"}}
         onClick={OKClick} >       
         {props.Text}

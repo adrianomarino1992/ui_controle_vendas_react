@@ -42,7 +42,7 @@ export default function Header()
             />
             <div className='MenuHeader' id="header-menu" style={{
                 height : context && context.Data?.GetCurrentUser()?.IsSuperUser() ? 
-                (window.innerWidth > 600 ? '90px' : '115px'): 
+                (window.innerWidth > 600 ? '95px' : '115px'): 
                 (window.innerWidth > 600 ? '115px' : '130px')
             }}>
                 <p onClick={()=>{ closeMenu(); context!.Data!.Navigate!('/products', []);}}>Produtos</p>

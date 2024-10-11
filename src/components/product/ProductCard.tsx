@@ -57,8 +57,8 @@ export default function ProductCard(props : {product : Product})
         style={props.product.Active ? {opacity: "100%"} : {opacity: "30%"}}>            
             <img className='ProductImage' src={
                 props.product.Id ?
-                `${API.URL}/product/static/get-image?productId=${props.product.Id}` : 
-                `${API.URL}/product/static/get-new-image`
+                `${API.URL}/product/static/get-image?productId=${props.product.Id}&timestamp=${new Date().getTime()}` : 
+                `${API.URL}/product/static/get-new-image?timestamp=${new Date().getTime()}`
                 }/>
             <h3>{props.product.Name}</h3>
             
@@ -67,6 +67,13 @@ export default function ProductCard(props : {product : Product})
                 <>
                 <h4>{props.product.Description}</h4>
                 <div className="CardPrice">R$: <code>{props.product.Price.toFixed(2)}</code></div>
+                {
+                    context?.Data?.CurrentUserIsSuperUser() && 
+                    (
+                        <div>Estoque: <code>{props.product.Storage}</code></div>
+
+                    )
+                }
                 </>
             }
         </div>

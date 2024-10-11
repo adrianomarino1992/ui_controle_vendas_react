@@ -7,7 +7,7 @@
     left: 0px;
     padding: 20px;
     background: rgb(254,254,254);
-    background: linear-gradient(120deg, rgba(254,254,254,1) 0%, rgb(235, 232, 232) 100%);
+    background: linear-gradient(120deg, rgb(206, 205, 205) 0%, rgb(235, 232, 232) 100%);
     overflow: auto;
 }
 

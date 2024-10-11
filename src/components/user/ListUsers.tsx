@@ -11,8 +11,7 @@ import { API } from '../../api/API';
 export default function ListUsers()
 {
     let [users, setUsers] = useState<User[]>([]);
-    let context = useGlobalContext();
-
+    let context = useGlobalContext();    
     let navigate = useNavigate();    
 
     useEffect(()=>{    
@@ -24,15 +23,14 @@ export default function ListUsers()
         {
             if(!context.Data.CurrentUserIsSuperUser())
                 navigate('/user', {state: context?.Data?.CurrentUser});
-        }
-        
+        }        
 
     }, []);
     
     useEffect(()=>{
 
         (async () =>{
-            
+                      
             if(!context?.Data?.CurrentUserIsSuperUser())
                 return;
             let getUsersTaskResult = await API.RequestAsync('/user/list-all', context?.Data?.Token ?? "", 'GET');
@@ -54,14 +52,13 @@ export default function ListUsers()
                 users.Add(user);
             }
 
-            users.Add(new User("", "Adicione um novo usuario", "Novo", "", ""));
+            users.Add(new User("", "Adicione um novo usuario", "Novo", "", ""));          
 
+            setUsers(users);  
 
-            setUsers(users);
-            
         })();
 
-    });
+    }, []);
 
     return(
         <div className='ListUsersContainer'>           

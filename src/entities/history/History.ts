@@ -9,5 +9,6 @@ export class History
     public ProductName? : string;
     public ProdutcPrice? : number;
     public UserBalance? : number;
+    public Amount?: number;
     
 }

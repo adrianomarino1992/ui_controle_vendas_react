@@ -15,8 +15,8 @@ export default function UserCard(props : {user : User})
         style={props.user.Active ? {opacity: "100%"} : {opacity: "30%"}}>            
             <img className='UserImage' src={
                 props.user.Id ?
-                `${API.URL}/user/static/get-image?userId=${props.user.Id}` : 
-                `${API.URL}/user/static/get-new-image`
+                `${API.URL}/user/static/get-image?userId=${props.user.Id}&timestamp=${new Date().getTime()}` : 
+                `${API.URL}/user/static/get-new-image?timestamp=${new Date().getTime()}`
                 }/>
             <h3>{props.user.Login}</h3>
             

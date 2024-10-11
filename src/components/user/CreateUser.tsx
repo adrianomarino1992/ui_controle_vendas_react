@@ -13,19 +13,21 @@ export default function EditProduct()
 
     let navigation = useNavigate();
 
-    let user : User | undefined =useLocation().state as (User | undefined);
-    
+    let user : User | undefined =useLocation().state as (User | undefined); 
+
     let editing : boolean = user != undefined && user.Id != "";    
 
     let [editingUser, setUser] = useState<User | undefined>(!editing ? new User("", "", "","", "").SetActive(true) : user);
 
+  
     let context = useGlobalContext();
 
     useEffect(()=>{       
+       
         if(context && context.Data && context.Data.CheckLogin)
             context!.Data!.CheckLogin!();   
                               
-        if(!editingUser?.IsSuperUser())
+        if(editingUser && editingUser.Id && !editingUser?.IsSuperUser())
         {
             let clone = Reflect.construct(User, []);
             Object.assign(clone, context?.Data?.CurrentUser);
@@ -96,9 +98,13 @@ export default function EditProduct()
                 Toast("Sucesso", `Usuario ${editing ? "alterado" : "incluido"} na base de dados`, ()=>
                 { 
                     if(context?.Data?.CurrentUser?.IsSuperUser())
-                        navigation('/users', {state:{Reload : true}});
+                    {                        
+                        navigation('/users');                        
+                    }
                     else 
                         navigation('/');   
+
+                    
                 });           
         }    
         
@@ -147,15 +153,22 @@ export default function EditProduct()
     }
 
     let ValueChange = () => 
-    {
-        let nome = (document.getElementById("nome-user") as any).value;
-        let login = (document.getElementById("login-user") as any).value;
-        let senha = (document.getElementById("senha-user") as any).value;
+    {        
+        let nome = (document.getElementById("nome-user-create") as any).value;
+        let login = (document.getElementById("login-user-create") as any).value;
+        let senha = (document.getElementById("senha-user-create") as any).value;
         let departamento = (document.getElementById("departamento-user") as any).value;
         let status = (document.getElementById("status-user") as any).value == 1;
         let saldo = (document.getElementById("saldo-user") as any).value;
 
-        console.log(editingUser);
+        if(!context?.Data?.CurrentUserIsSuperUser())
+        {
+            saldo = editingUser?.Balance;
+            login = editingUser?.Login;
+            status = editingUser?.Active ?? true;
+            departamento = editingUser?.Departament;
+        }
+       
         setUser(new User(editing ? user!.Id : "", nome, login, senha, departamento).SetActive(status).SetBalance(saldo));  
 
     }
@@ -169,20 +182,20 @@ export default function EditProduct()
                 `${API.URL}/user/static/get-default-image`} onClick={()=> SelecionarArquivo()}/>
              <>
             <code>Login</code>
-            <input id="login-user" type='text' maxLength={3} placeholder='login do usuario' value={editingUser?.Login} onChange={()=>{ValueChange()}} 
+            <input id="login-user-create" type='text' maxLength={3} placeholder='login do usuario' value={editingUser?.Login} onChange={()=>{ValueChange()}} 
             disabled={!context?.Data?.CurrentUser?.IsSuperUser()}/>
             </>
             <>
             <code>Nome</code>
-            <input id="nome-user" type='text' placeholder='Nome do usuario' value={editingUser?.Name} onChange={()=>{ValueChange()}}/>
+            <input id="nome-user-create" type='text' placeholder='Nome do usuario' value={editingUser?.Name} onChange={()=>{ValueChange()}}/>
             </>
             <>
             <code>Senha</code>
-            <input id="senha-user" type='password' placeholder='Senha do usuario' value={editingUser?.Password} onChange={()=>{ValueChange()}}/>
+            <input id="senha-user-create" type='password' placeholder='Senha do usuario' value={editingUser?.Password} onChange={()=>{ValueChange()}}/>
             </>
             <>
             <code>Departamento</code>
-                <select id="departamento-user" onChange={()=>{ValueChange()}} defaultValue={editingUser?.Departament} disabled={!context?.Data?.CurrentUser?.IsSuperUser()}>
+                <select id="departamento-user" onChange={()=>{ValueChange()}} defaultValue={editingUser?.Departament ? editingUser.Departament : "Sem departamento definido"} disabled={!context?.Data?.CurrentUser?.IsSuperUser()}>
                     {
                         ["Desenvolvimento", "Suporte", "Implantação", "Recursos humanos", "Comercial", "Sem departamento definido"].Select(s => 
                             (
@@ -205,7 +218,7 @@ export default function EditProduct()
             </>
             <hr/>
             <div className='ButtonsContainer'>
-                <Button Text='Cancelar' Type='Cancel' OnClickEventHandler={()=>{ navigation(-1)}}/>
+                <Button Text='Cancelar' Type='Cancel' OnClickEventHandler={()=>{ context?.Data?.CurrentUserIsSuperUser()? navigation('/users') : navigation('/products')}}/>
                 <Button Text='Salvar' Type='Save' OnClickEventHandler={SalvarClick}/>
             </div>
         </div>

@@ -18,7 +18,11 @@ export interface IGlobalContextData
     CurrentUserIsSuperUser: ()=> boolean,
     Navigate? : (path: string, args: any) => void,
     UpdateStatusBarHandler?: (data: IFooterData) => void,
-    UpdateCurrentUser?: () => void
+    UpdateCurrentUser?: () => void 
+    // ReloadProducts? : ()=>void;
+    // ReloadUsers? : ()=>void;
+
+
 }
 
 const ContextType = createContext<IGlobalContextProps | undefined>(undefined);

@@ -110,7 +110,7 @@ export default function Login()
                 </>
                 <hr/>
                 <>
-                    <Button Text='Entrar' OnClickEventHandler={()=>{tryLogin()}} Type='Save'/>
+                    <Button Text='Entrar' OnClickEventHandler={()=>{tryLogin()}} Type='Login'/>
                 </>           
             </div>
 
